@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dukan Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--hd:#0f6b4f;--pri:#0f6b4f;--acc:#f2b630;--bg:#f5f3ec;--card:#fff;--tx:#1c2a24;--mut:#6b7a72;--line:#e3e0d4;--bad:#c0392b;--f:'Plus Jakarta Sans',system-ui,sans-serif;--h:'Baloo 2','Plus Jakarta Sans',system-ui,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#121a16;--card:#1b2620;--tx:#eef2ee;--mut:#9aa9a0;--line:#2b3830;--bad:#ff7b6b;--pri:#25936f}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:400 16px/1.45 var(--f);padding-bottom:80px}
+header{position:sticky;top:0;background:var(--hd);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:4px solid var(--acc);z-index:5}header b{font:800 22px var(--h)}header small{cursor:pointer}
+main{padding:16px;max-width:640px;margin:0 auto}h2{font:800 24px var(--h);margin:0 0 12px}
+.card,.t{background:var(--card);border:1px solid var(--line);border-radius:6px 14px 14px 14px;padding:14px;margin-bottom:12px}
+.hero{background:var(--hd);color:#fff;border-radius:14px;padding:18px;margin-bottom:12px}.hero div{font:800 48px/1.1 var(--h)}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}.t{margin:0;border-left:4px solid var(--pri);border-radius:6px 14px 14px 6px}.t small{color:var(--mut);display:block}.t b{font:800 24px var(--h)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0}.mut{color:var(--mut);font-size:14px}.bad{color:var(--bad)}
+.bdg{background:var(--acc);color:#1c2a24;border-radius:8px;padding:1px 8px;font-size:12px;font-weight:700}
+label{display:block;margin:10px 0 4px;font-weight:600;font-size:14px}input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
+.b{display:inline-block;background:var(--pri);color:#fff;border:0;border-radius:10px;padding:12px 16px;font:700 16px var(--f);cursor:pointer;text-align:center;text-decoration:none}.b.o{background:transparent;color:var(--pri);border:2px solid var(--pri)}.b.w{width:100%}.b.s{padding:7px 12px;font-size:14px}
+nav{position:fixed;bottom:0;left:0;right:0;width:100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;background:var(--card);border-top:1px solid var(--line)}nav button{background:none;border:0;padding:14px 4px;font:600 14px var(--f);color:var(--mut)}nav button.on{color:var(--pri);box-shadow:inset 0 3px var(--pri)}
+.wn{background:var(--acc);color:#1c2a24;padding:8px 16px;font-weight:600}
+#m{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center;z-index:9}#m.on{display:flex}.mc{background:var(--card);width:100%;max-width:640px;max-height:90vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px}.mc h3{font:800 20px var(--h);margin:0}.mc .r{display:flex;gap:8px;margin-top:14px}.mc .r .b{flex:1}
+#t{display:none;position:fixed;bottom:84px;left:16px;right:16px;max-width:608px;margin:auto;background:#1c2a24;color:#fff;padding:12px 16px;border-radius:10px;z-index:10}#t.on{display:block}
+.lg{max-width:380px;margin:12vh auto;padding:16px}
+table.l{width:100%;border-collapse:collapse;font-size:14px}.l td,.l th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right}.l td:first-child,.l th:first-child{text-align:left}
+#rc{display:none}@media print{body>*:not(#rc){display:none!important}#rc{display:block;padding:16px;color:#000;background:#fff;font:14px monospace}}
+
+
+/* Shop identity + dedicated settings navigation */
+.shop-brand{display:flex;align-items:center;gap:10px;min-width:0}
+.shop-icon{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border:1.5px solid rgba(255,255,255,.65);border-radius:12px;font-size:22px;animation:shopIconFloat 3s ease-in-out infinite}
+.shop-title{display:block;max-width:60vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;animation:shopNameGlow 3.2s ease-in-out infinite}
+@keyframes shopIconFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(-2deg)}}
+@keyframes shopNameGlow{0%,100%{text-shadow:0 0 0 rgba(255,255,255,0)}50%{text-shadow:0 0 10px rgba(255,255,255,.48)}}
+nav button{line-height:1.2}
+.nav-ico{display:block;font-size:17px;margin-bottom:3px}
+.settings-section{margin-bottom:14px}
+.settings-section h3{font:800 18px var(--h);margin:0 0 9px}
+.settings-link{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 2px;border-bottom:1px solid var(--line);color:var(--tx);font-weight:600;cursor:pointer}
+.settings-link:last-child{border-bottom:0}
+.settings-link span:last-child{color:var(--mut);font-size:19px}
+
+/* ===== AE40 MOBILE RESPONSIVE LAYER ===== */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  min-width: 320px;
+  overflow-x: hidden;
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+}
+button, input, select, a {
+  touch-action: manipulation;
+}
+button, .b, nav button {
+  min-height: 44px;
+}
+input, select {
+  min-height: 46px;
+  font-size: 16px;
+}
+header {
+  padding: 10px 14px;
+  gap: 10px;
+}
+header b {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+header small {
+  white-space: nowrap;
+  padding: 8px 2px 8px 8px;
+}
+main {
+  width: 100%;
+  padding: 12px;
+}
+.card, .t {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.row {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.row > * {
+  min-width: 0;
+}
+.g {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+nav {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding-bottom: env(safe-area-inset-bottom);
+  min-height: 60px;
+  width: 100%;
+}
+nav button {
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  padding: 10px 2px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+#m .mc {
+  padding: 16px;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom));
+}
+#m .mc .r {
+  position: sticky;
+  bottom: -16px;
+  background: var(--card);
+  padding: 10px 0 2px;
+}
+table.l {
+  min-width: 440px;
+}
+.card:has(table.l) {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 420px) {
+  main {
+    padding: 10px;
+  }
+  h2 {
+    font-size: 22px;
+  }
+  .hero {
+    padding: 15px;
+  }
+  .hero div {
+    font-size: clamp(34px, 11vw, 46px);
+  }
+  .g {
+    gap: 8px;
+  }
+  .t {
+    padding: 11px;
+  }
+  .t b {
+    font-size: 21px;
+  }
+  .b {
+    padding: 11px 12px;
+    font-size: 15px;
+  }
+  .b.s {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  .row {
+    gap: 7px;
+  }
+  nav button {
+    font-size: 12px;
+  }
+  .lg {
+    margin: 8vh auto;
+    padding: 12px;
+  }
+}
+@media (max-width: 350px) {
+  nav button {
+    font-size: 11px;
+    padding-left: 1px;
+    padding-right: 1px;
+  }
+  .g {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+
+/* Record search fields */
+.record-search{
+ display:block;width:100%;min-height:48px;margin:0 0 12px;padding:12px 14px;
+ border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--tx);
+ font:inherit;outline:none;
+}
+.record-search:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(15,107,79,.12)}
+
+/* AE40 information and support sections */
+.ae-login-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px}
+.ae-login-links button{border:0;background:transparent;color:var(--pri);font:600 13px var(--f);padding:5px}
+.ae-menu-card h3{margin:0 0 10px;font:800 18px var(--h)}
+.ae-service-row{padding:9px 2px;border-bottom:1px solid var(--line);font-weight:600}
+.ae-info p,.ae-info li{line-height:1.6}
+.ae-info .muted-warning{background:rgba(242,182,48,.16);border-left:4px solid var(--acc);padding:10px;border-radius:8px}
+
+.ae-intro{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--hd);color:#fff;text-align:center;padding:24px;animation:aeFade .45s ease-out}
+.ae-intro-mark{font:800 58px/1.1 var(--h);letter-spacing:3px;border:3px solid var(--acc);border-radius:18px;padding:12px 22px;animation:aePop .65s ease-out}
+.ae-intro-name{font:800 22px var(--h);margin-top:18px;letter-spacing:2px}
+.ae-intro-line{font-size:13px;opacity:.85;margin:4px 0 24px}
+@keyframes aeFade{from{opacity:0}to{opacity:1}}
+@keyframes aePop{0%{transform:scale(.8);opacity:0}70%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+</style></head><body>
+<div id="app"></div><div id="m"></div><div id="t"></div><div id="rc"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+// ====== YAHAN APNI SUPABASE VALUES LIKHEIN (Project Settings > API) ======
+const SUPABASE_URL='https://cidajyndyqugrqliifxx.supabase.co',SUPABASE_KEY='sb_publishable_npf7Eu98TJ0E6w2vkbxhwg_jWJtGi9S';
+// ========================================================================
+let sb;try{
+ if(typeof supabase=='undefined')throw 'LIB';
+ if(SUPABASE_URL.includes('PASTE')||SUPABASE_KEY.includes('PASTE'))throw 'PASTE';
+ if(!/^https:\/\/\S+$/.test(SUPABASE_URL.trim()))throw 'URL';
+ const K=SUPABASE_KEY.trim();sb=supabase.createClient(SUPABASE_URL.trim(),K,{global:{fetch:(u,o={})=>{const h=new Headers(o.headers||{});if(h.get('Authorization')==='Bearer '+K)h.delete('Authorization');return fetch(u,{...o,headers:Object.fromEntries(h.entries())})}}})}
+catch(e){const W={LIB:'Supabase library load nahi hui. Internet check karein, phir page refresh karein.',PASTE:'URL aur key abhi PASTE... likhi hui hain. Apni values likh kar file save karein.',URL:'URL ghalat lag raha hai. Aisa hona chahiye: https://xxxx.supabase.co'};document.getElementById('app').innerHTML='<div class="lg"><h2>Setup adhoora hai</h2><div class="card">'+(W[e]||'Key ya URL ghalat lag rahi hai. Poori anon key bina space ke likhein.')+'</div></div>'}
+const $=i=>document.getElementById(i),R=n=>'Rs '+Math.round(n||0).toLocaleString('en-US'),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sum=(a,f)=>a.reduce((t,x)=>t+(+f(x)||0),0);
+let ST={tab:'home',cart:[],cid:'',dsc:0,P:[],C:[],stk:{},bal:{},T:[],me:null,R:[],L:[],X:[],CL:null,cd:'',S:[],SB:{},SM:[],cs:'',AD:[],TR:[],archC:{},archP:{},admin:false};
+const own=()=>ST.me&&ST.me.role=='owner',canManageProducts=()=>ST.me&&['owner','staff'].includes(ST.me.role),hasFeature=k=>ST.me?.features?.[k]===true,needFeature=(k,label)=>{if(!hasFeature(k)){toast(label+' aap ke package mein available nahi hai.');return false}return true},gc=id=>ST.C.find(c=>c.id==id)||ST.archC[id]||{},gp=id=>ST.P.find(p=>p.id==id)||ST.archP[id]||{},stock=id=>ST.stk[id]||0,wk=()=>(ST.C.find(c=>c.is_walkin)||{}).id;
+function toast(t){const e=$('t');e.textContent=ae40TranslateText(t);e.className='on';clearTimeout(toast.k);toast.k=setTimeout(()=>e.className='',3500)}
+function filterRecords(kind,value){
+ const q=String(value||'').trim().toLocaleLowerCase();
+ const cards=document.querySelectorAll('[data-search-kind="'+kind+'"]');
+ let shown=0;
+ cards.forEach(card=>{const match=(card.dataset.search||'').toLocaleLowerCase().includes(q);card.style.display=match?'':'none';if(match)shown++});
+ const empty=$('search-empty-'+kind);
+ if(empty)empty.style.display=cards.length&&shown===0?'block':'none';
+}
+const searchBox=(kind,placeholder)=>'<input class="record-search" type="search" autocomplete="off" placeholder="'+placeholder+'" oninput="filterRecords(\''+kind+'\',this.value)" aria-label="'+placeholder+'">';
+
+const ERR={CREDIT_LIMIT:'Customer ki udhaar limit se zyada udhaar ho jayega.',WALKIN_NO_CREDIT:'Walk-in customer ko udhaar nahi. Customer chunein.',BAD_DISCOUNT:'Discount bill se zyada nahi ho sakta.',BAD_PAID:'Paid raqam sahi likhein.',NO_ITEMS:'Pehle item add karein.',NO_ACCESS:'Aap ka account active nahi.'};
+const msg=e=>{const m=e.message||'';for(const k in ERR)if(m.includes(k))return ERR[k];return 'Masla: '+m};
+const bad=r=>{if(r.error){toast(msg(r.error));return true}return false};
+function ask(t,f){return new Promise(ok=>{const m=$('m');m.innerHTML='<div class="mc"><h3>'+esc(t)+'</h3>'+f.map((x,i)=>'<label>'+x[1]+'</label>'+(x[2]=='sel'?'<select id="f'+i+'">'+x[3].map(o=>'<option value="'+esc(o[0])+'">'+esc(o[1])+'</option>').join('')+'</select>':'<input id="f'+i+'" type="'+(x[2]||'text')+'" '+(x[2]=='number'?'inputmode="decimal" step="any"':'')+' value="'+esc(x[3]??'')+'">')).join('')+'<div class="r"><button class="b o" id="fc">Cancel</button><button class="b" id="fs">Save</button></div></div>';m.className='on';applyTranslations(m);$('fc').onclick=()=>{m.className='';ok(null)};$('fs').onclick=()=>{const v=f.map((x,i)=>{const e=$('f'+i).value;return x[2]=='number'?(e===''?NaN:+e):e});m.className='';ok(v)}})}
+function loginView(){$('app').innerHTML='<div class="lg"><h2 style="font-size:32px">Dukan Manager</h2><p class="mut">Apne email aur password se login karein.</p><label>Email</label><input id="em" type="email" autocomplete="username"><label>Password</label><input id="pw" type="password" autocomplete="current-password"><div id="le" class="bad" style="margin-top:8px"></div><button class="b w" style="margin-top:12px" onclick="login()">Login</button><div class="ae-login-links"><button onclick="showInfo(\'privacy\')">Privacy Policy</button><button onclick="showInfo(\'terms\')">Terms &amp; Conditions</button><button onclick="showInfo(\'contact\')">Contact Us</button><button onclick="showInfo(\'about\')">About Us</button></div><p class="mut" style="text-align:center;margin-top:12px">Developed by Ahmad Edits (AE40)</p></div>';applyTranslations($('app'))}
+async function diag(){const o=[];try{const r=await fetch(SUPABASE_URL.trim()+'/auth/v1/health',{headers:{apikey:SUPABASE_KEY.trim()}});o.push('Direct test: '+r.status)}catch(x){o.push('Direct test: fail')}o.push('Page: '+location.protocol);o.push('Online: '+navigator.onLine);return o.join(' | ')}
+async function login(){const r=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});if(r.error){const m=r.error.message||'';return $('le').textContent=m.includes('Failed to fetch')?'Login nahi ho saka: Failed to fetch. '+await diag():m.includes('Invalid login')?'Email ya password galat hai.':m.includes('not confirmed')?'Is email ki confirmation baqi hai. Admin se rabta karein.':'Login nahi ho saka: '+m}init()}
+const gate=t=>{$('app').innerHTML='<div class="lg"><h2>Dukan Manager</h2><div class="card">'+t+'</div><button class="b o w" onclick="logout()">Logout</button></div>'};
+async function logout(){await sb.auth.signOut();ST.cart=[];ST.me=null;init()}
+async function init(){
+ const {data:{session}}=await sb.auth.getSession();
+ if(!session)return loginView();
+ const r=await sb.rpc('my_status');
+ if(r.error||!r.data)return gate('Aap ka account kisi dukan se juda nahi hai. Admin se rabta karein.');
+ ST.me=r.data;
+ if(ST.me.expired)return gate('Aap ki subscription khatam ho gayi hai. Dobara shuru karne ke liye admin se rabta karein.');
+ // Read feature entitlements through the authenticated Supabase session.
+ const featureKeys=['expenses','suppliers','statements','credit_limit','multi_branch'];
+ const featureResults=await Promise.all(featureKeys.map(async key=>{
+   const fr=await sb.rpc('my_feature',{feature_name:key});
+   if(fr.error)throw new Error('Package permission check failed for '+key+': '+fr.error.message);
+   return [key,fr.data===true];
+ }));
+ ST.me.features=Object.fromEntries(featureResults);
+ const ad=await sb.rpc('is_admin');ST.admin=ad.data===true;
+ if(!ST.admin||own())await load();draw()}
+async function load(){
+ const d=new Date(ymd()+'T00:00:00+05:00');
+ const [p,s,c,b,t,sp]=await Promise.all([
+  sb.from('products').select('*').is('deleted_at',null).order('name'),
+  sb.from('product_stock').select('product_id,stock'),
+  sb.from('customers').select('*').is('deleted_at',null).order('name'),
+  sb.from('customer_balance').select('customer_id,balance'),
+  sb.from('sales').select('id,inv_no,sold_at,paid,discount,customer_id,sale_items(qty,price,cost),sale_returns(qty,price,cost,cash_refund)').gte('sold_at',d.toISOString()),sb.from('suppliers').select('id,name,phone').is('deleted_at',null).order('name')]);
+ [p,s,c,b,t,sp].forEach(bad);ST.S=sp.data||[];
+ ST.P=p.data||[];ST.C=c.data||[];ST.T=t.data||[];
+ ST.stk=Object.fromEntries((s.data||[]).map(x=>[x.product_id,+x.stock]));
+ ST.bal=Object.fromEntries((b.data||[]).map(x=>[x.customer_id,+x.balance]))}
+const go=async t=>{if(['close','exp','sup','trash','bk'].includes(t)&&!own())return toast('Ye section sirf Owner ke liye hai.');if(t=='exp'&&!needFeature('expenses','Kharcha'))return;if(t=='sup'&&!needFeature('suppliers','Supplier'))return;if(t=='stm'&&!needFeature('statements','Customer Hisaab'))return;if(t=='adm'&&!ST.admin)return toast('Admin access zaroori hai.');ST.tab=t;if(t=='bk'){draw();await loadGoogleStatus();return}if(t=='rec')await loadRec();if(t=='close')await loadClose();if(t=='exp')await loadExp();if(t=='sup')await loadSup();if(t=='adm')await loadAdm();if(t=='trash')await loadTrash();draw()};
+const warn=()=>{const d=ST.me.paid_till;if(!d)return'';const n=Math.ceil((new Date(d)-new Date())/864e5);return n<=5?'<div class="wn">Subscription '+d+' ko khatam ho rahi hai. Pehle se fee ada kar dein.</div>':''};
+function draw(){
+ const tabs=[['home','⌂','Home'],['sale','＋','Bikri'],['stock','▤','Maal'],['cust','♙','Customer'],['more','•••','More']];
+ if(!own()&&['close','exp','sup','bk'].includes(ST.tab))ST.tab='more';if(ST.tab=='exp'&&!hasFeature('expenses'))ST.tab='more';if(ST.tab=='sup'&&!hasFeature('suppliers'))ST.tab='more';if(ST.tab=='stm'&&!hasFeature('statements'))ST.tab='cust';if(ST.tab=='adm'&&!ST.admin)ST.tab='more';
+ const v={home:vHome,sale:vSale,stock:vStock,cust:vCust,more:vMore,settings:vSettings,rec:vRec,close:vClose,exp:vExp,sup:vSup,trash:vTrash,bk:vBk,stm:vStm,adm:vAdm}[ST.tab]();
+ $('app').innerHTML='<header><div class="shop-brand"><span class="shop-icon" aria-hidden="true">🏪</span><b class="shop-title">'+esc(ST.me.shop_name)+'</b></div><button class="b o s" aria-label="Settings" title="Settings" onclick="go(\'settings\')">⚙</button></header>'+warn()+'<main>'+v+'</main><nav>'+tabs.map(t=>'<button class="'+(t[0]==ST.tab||(t[0]=='more'&&MORE.includes(ST.tab))||(t[0]=='cust'&&ST.tab=='stm')?'on':'')+'" onclick="go(\''+t[0]+'\')"><span class="nav-ico">'+t[1]+'</span>'+t[2]+'</button>').join('')+'</nav>';applyTranslations($('app'))}
+const tile=(l,v,c)=>'<div class="t"><small>'+l+'</small><b class="'+(c||'')+'">'+v+'</b></div>';
+function vHome(){
+ const T=ST.T,tot=NT,low=ST.P.filter(p=>stock(p.id)<=p.reorder_level);
+ return '<div class="hero"><small>Aaj ki Sale</small><div>'+R(sum(T,tot))+'</div><small>'+T.length+' bill aaj</small></div>'+bkNag()+'<div class="g">'+tile('Udhaar (Baqaya)',R(sum(ST.C,c=>ST.bal[c.id])),'bad')+(own()?tile('Aaj ka Munafa',R(sum(T,NP))):'')+tile('Products',ST.P.length)+tile('Kam Stock',low.length,low.length?'bad':'')+'</div><div class="card"><b>Kam stock wali cheezein</b>'+(low.map(p=>'<div class="row"><span>'+esc(p.name)+'</span><span><span class="bdg">REORDER</span> '+stock(p.id)+' '+esc(p.unit)+'</span></div>').join('')||'<p class="mut">Sab cheezon ka stock theek hai.</p>')+'</div>'+exCard()}
+function vSale(){
+ const cid=ST.cid||wk(),t=Math.max(0,sum(ST.cart,i=>i.qty*gp(i.pid).price)-ST.dsc);
+ return '<h2>Nayi Bikri</h2><div class="card"><label>Customer</label><select onchange="ST.cid=this.value">'+ST.C.map(c=>'<option value="'+c.id+'"'+(c.id==cid?' selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select><label>Product</label><select id="sp">'+ST.P.map(p=>'<option value="'+p.id+'">'+esc(p.name)+' ('+stock(p.id)+' '+esc(p.unit)+') '+R(p.price)+'</option>').join('')+'</select><label>Qty</label><input id="sq" type="number" value="1" inputmode="decimal" step="any"><button class="b w" style="margin-top:10px" onclick="addItem()">+ Item add karein</button></div>'
+ +(ST.cart.length?'<div class="card">'+ST.cart.map((i,k)=>'<div class="row"><span>'+esc(gp(i.pid).name)+' x'+i.qty+'</span><span>'+R(i.qty*gp(i.pid).price)+' <a onclick="ST.cart.splice('+k+',1);draw()">x</a></span></div>').join('')+'<label>Discount (Rs)</label><input id="sdc" type="number" inputmode="decimal" value="'+(ST.dsc||'')+'" oninput="dc()"><div class="row" style="margin-top:10px"><b>Total</b><b id="tt">'+R(t)+'</b></div><label>Paid (Rs) <small class="mut">udhaar ho to kam likhein</small></label><input id="sd" type="number" inputmode="decimal" value="'+t+'"><label>Udhaar wapsi ki tareekh</label><input id="sdue" type="date"><button class="b w" style="margin-top:12px" onclick="saveSale()">Save Sale</button></div>':'')}
+function addItem(){const pid=$('sp').value,q=+$('sq').value;if(!pid||!(q>0))return toast('Product aur qty sahi likhein');const ex=ST.cart.find(i=>i.pid==pid),n=(ex?ex.qty:0)+q;if(n>stock(pid))return toast('Stock kam hai. Maujood: '+stock(pid));if(ex)ex.qty=n;else ST.cart.push({pid,qty:q});draw()}
+function dc(){ST.dsc=Math.max(0,+$('sdc').value||0);const t=Math.max(0,sum(ST.cart,i=>i.qty*gp(i.pid).price)-ST.dsc);$('tt').textContent=R(t);$('sd').value=t}
+async function saveSale(force){
+ const paid=+$('sd').value;if(isNaN(paid))return toast('Paid raqam sahi likhein');
+ const r=await sb.rpc('create_sale',{p_customer:ST.cid||wk(),p_discount:ST.dsc,p_paid:paid,p_due:$('sdue').value||null,p_items:ST.cart.map(i=>({product_id:i.pid,qty:i.qty})),p_force:!!force});
+ if(r.error){if(r.error.message.includes('CREDIT_LIMIT')&&own()&&confirm('Limit se zyada udhaar ho jayega. Phir bhi karein?'))return saveSale(true);return toast(msg(r.error))}
+ ST.cart=[];ST.dsc=0;ST.cid='';await load();toast('Bikri save ho gayi');draw()}
+function vStock(){return '<h2>Maal</h2>'+(canManageProducts()?'<button class="b w" style="margin-bottom:8px" onclick="addProd()">+ Naya Product</button>':'')+(own()?'<button class="b o w" style="margin-bottom:8px" onclick="stockIn()">+ Maal aaya</button>':'')+(canManageProducts()?'<button class="b o w" style="margin-bottom:12px" onclick="stockCorrect()">Stock Correction</button>':'')+searchBox('product','Product ka naam search karein')+'<p id="search-empty-product" class="mut" style="display:none">Is naam ka product nahi mila.</p>'+(ST.P.map(p=>{const s=stock(p.id);return '<div class="card" data-search-kind="product" data-search="'+esc(p.name)+'"><div class="row"><b>'+esc(p.name)+'</b><b class="'+(s<=p.reorder_level?'bad':'')+'">'+s+' '+esc(p.unit)+'</b></div><div class="mut">'+(own()?'Cost '+R(p.cost)+' | ':'')+'Sale '+R(p.price)+(p.expiry?' | Expiry '+p.expiry:'')+'</div>'+(canManageProducts()?'<div class="row" style="justify-content:flex-start;flex-wrap:wrap;margin-top:8px"><button class="b o s" onclick="editProd(\''+p.id+'\')">Edit</button>'+(own()?'<button class="b o s bad" onclick="moveTrash(\'products\',\''+p.id+'\')">Trash mein bhejein</button>':'')+'</div>':'')+'</div>'}).join('')||'<p class="mut">Abhi koi product nahi. Naya product add karein.</p>')}
+async function addProd(){if(!canManageProducts())return toast('Product add karne ki ijazat nahi.');const v=await ask('Naya Product',[['n','Naam'],['u','Unit','sel',['pcs','kg','dozen','carton','litre','pack'].map(x=>[x,x])],['c','Cost price (Rs)','number'],['p','Sale price (Rs)','number'],['o','Pehle ka stock','number',0],['r','Reorder level','number',5],['e','Expiry date (khali = nahi)','date']]);if(!v)return;if(!v[0].trim()||isNaN(v[2])||isNaN(v[3]))return toast('Naam, cost aur sale price zaroori hain');const r=await sb.from('products').insert({name:v[0].trim(),unit:v[1],cost:v[2],price:v[3],opening_stock:isNaN(v[4])?0:v[4],reorder_level:isNaN(v[5])?5:v[5],expiry:v[6]||null});if(bad(r))return;await load();draw()}
+async function editProd(id){if(!canManageProducts())return toast('Product edit karne ki ijazat nahi.');const p=ST.P.find(x=>x.id===id);if(!p)return toast('Product nahi mila. Page refresh karein.');const v=await ask('Product Edit - '+p.name,[['n','Naam','text',p.name],['u','Unit','sel',['pcs','kg','dozen','carton','litre','pack'].map(x=>[x,x])],['c','Cost price (Rs)','number',p.cost],['s','Sale price (Rs)','number',p.price],['r','Reorder level','number',p.reorder_level],['e','Expiry date (khali = nahi)','date',p.expiry||'']]);if(!v)return;if(!v[0].trim()||isNaN(v[2])||v[2]<0||isNaN(v[3])||v[3]<0||isNaN(v[4])||v[4]<0)return toast('Naam aur tamam prices / reorder level sahi likhein.');const changes={name:v[0].trim(),unit:v[1],cost:v[2],price:v[3],reorder_level:v[4],expiry:v[5]||null};const r=await sb.from('products').update(changes).eq('id',id);if(bad(r))return;lg('Product edit '+p.name+' → '+changes.name);await load();draw();toast('Product update ho gaya.')}
+async function stockIn(){if(!own())return toast('Stock-in sirf Owner kar sakta hai.');if(!ST.P.length)return toast('Pehle product add karein');const v=await ask('Maal aaya',[['p','Product','sel',ST.P.map(p=>[p.id,p.name])],['q','Qty','number'],['c','Cost per unit (Rs, khali = purani)','number']]);if(!v)return;if(!(v[1]>0))return toast('Qty 0 se zyada likhein');const c=isNaN(v[2])?gp(v[0]).cost:v[2];const r=await sb.from('stock_in').insert({product_id:v[0],qty:v[1],cost:c,paid:v[1]*c});if(bad(r))return;await load();draw()}
+function vCust(){return '<h2>Customer</h2><button class="b w" style="margin-bottom:12px" onclick="addCust()">+ Naya Customer</button>'+searchBox('customer','Customer ka naam ya phone search karein')+'<p id="search-empty-customer" class="mut" style="display:none">Koi customer nahi mila.</p>'+(ST.C.filter(c=>!c.is_walkin).map(c=>{const b=ST.bal[c.id]||0,m='Salam '+c.name+', '+ST.me.shop_name+' se aap ka '+R(b)+' udhaar baqi hai'+(c.due_date?' (wada: '+c.due_date+')':'')+'. Barae meharbani ada kar dein. Shukriya.';return '<div class="card" data-search-kind="customer" data-search="'+esc(c.name+' '+(c.phone||''))+'"><div class="row"><b>'+esc(c.name)+'</b><b class="'+(b>0?'bad':'')+'">'+R(b)+'</b></div><div class="mut">'+esc(c.phone||'Phone nahi')+(hasFeature('credit_limit')&&c.credit_limit>0?' | Limit '+R(c.credit_limit):'')+(c.due_date&&b>0?' | Wada '+c.due_date:'')+'</div><div class="row" style="margin-top:8px;justify-content:flex-start"><button class="b o s" onclick="payIn(\''+c.id+'\')">Payment Receive</button>'+(hasFeature('statements')?'<button class="b o s" onclick="openStm(\''+c.id+'\')">Hisaab</button>':'')+(own()?'<button class="b o s" onclick="editCust(\''+c.id+'\')">Edit</button>'+(hasFeature('credit_limit')?'<button class="b o s" onclick="editLim(\''+c.id+'\')">Limit</button>':''):'')+''+(c.phone&&b>0?'<a class="b o s" href="sms:'+esc(c.phone)+'?body='+encodeURIComponent(m)+'">SMS Reminder</a>':'')+'</div>'+(own()?'<button class="b o s bad" style="margin-top:8px" onclick="moveTrash(\'customers\',\''+c.id+'\')">Trash mein bhejein</button>':'')+'</div></div>'}).join('')||'<p class="mut">Abhi koi customer nahi.</p>')}
+async function addCust(){const fields=[['n','Naam'],['p','Phone','tel'],['a','Address']];if(hasFeature('credit_limit'))fields.push(['l','Udhaar limit (Rs, khali = koi limit nahi)','number']);const v=await ask('Naya Customer',fields);if(!v)return;if(!v[0].trim())return toast('Naam likhein');const data={name:v[0].trim(),phone:v[1]||null,address:v[2]||null};if(hasFeature('credit_limit'))data.credit_limit=isNaN(v[3])?0:v[3];const r=await sb.from('customers').insert(data);if(bad(r))return;await load();draw()}
+async function editCust(id){
+ if(!own())return toast('Customer edit sirf Owner kar sakta hai.');
+ const c=ST.C.find(x=>x.id===id);
+ if(!c||c.is_walkin)return toast('Customer record nahi mila ya edit nahi ho sakta.');
+ const v=await ask('Customer Edit - '+c.name,[['n','Naam','text',c.name],['p','Phone','tel',c.phone||''],['a','Address','text',c.address||'']]);
+ if(!v)return;
+ if(!v[0].trim())return toast('Customer ka naam zaroori hai.');
+ const changes={name:v[0].trim(),phone:v[1].trim()||null,address:v[2].trim()||null};
+ const r=await sb.from('customers').update(changes).eq('id',id);
+ if(bad(r))return;
+ lg('Customer edit '+c.name+' → '+changes.name);
+ await load();
+ draw();
+ toast('Customer update ho gaya. Payment history aur balance change nahi kiye gaye.');
+}
+async function payIn(id){const v=await ask('Payment Receive - '+gc(id).name,[['a','Raqam (Rs)','number'],['n','Note (optional)']]);if(!v)return;if(!(v[0]>0))return toast('Raqam 0 se zyada likhein');const r=await sb.from('payments').insert({customer_id:id,amount:v[0],note:v[1]||null});if(bad(r))return;await load();toast('Payment save ho gayi');draw()}
+const dk=t=>new Date(t).toLocaleDateString('en-CA',{timeZone:'Asia/Karachi'}),ymd=()=>dk(Date.now());
+const fm=t=>new Date(t).toLocaleString('en-GB',{timeZone:'Asia/Karachi',day:'2-digit',month:'short',hour:'numeric',minute:'2-digit',hour12:true});
+const NT=s=>sum(s.sale_items,i=>i.qty*i.price)-s.discount-sum(s.sale_returns||[],r=>r.qty*r.price),NP=s=>sum(s.sale_items,i=>i.qty*(i.price-i.cost))-s.discount-sum(s.sale_returns||[],r=>r.qty*(r.price-r.cost)),RF=s=>sum(s.sale_returns||[],r=>r.cash_refund);
+const MORE=['more','rec','close','exp','sup','trash','bk','adm'],gs=id=>ST.R.find(s=>s.id==id)||{},inv=s=>'INV-'+String(s.inv_no).padStart(3,'0');
+const lg=a=>{sb.from('audit_log').insert({action:a}).then(()=>{})};
+const twice=(f,id)=>{if(f.k!=id){f.k=id;toast('Dobara Delete dabayein');setTimeout(()=>f.k=0,4000);return false}f.k=0;return true};
+async function loadRec(){const [s,l,c,p]=await Promise.all([sb.from('sales').select('id,inv_no,sold_at,paid,discount,customer_id,sale_items(product_id,qty,price,cost),sale_returns(product_id,qty,price,cost,cash_refund)').order('sold_at',{ascending:false}).limit(50),own()?sb.from('audit_log').select('action,role,created_at').order('created_at',{ascending:false}).limit(20):Promise.resolve({data:[]}),sb.from('customers').select('id,name'),sb.from('products').select('id,name')]);[s,c,p].forEach(bad);ST.R=s.data||[];ST.L=l.data||[];ST.archC=Object.fromEntries((c.data||[]).map(x=>[x.id,x]));ST.archP=Object.fromEntries((p.data||[]).map(x=>[x.id,x]))}
+async function loadExp(){const r=await sb.from('expenses').select('*').order('created_at',{ascending:false}).limit(60);bad(r);ST.X=r.data||[]}
+async function loadClose(){const d=ST.cd=ST.cd||ymd(),a=new Date(d+'T00:00:00+05:00'),A=a.toISOString(),B=new Date(a.getTime()+864e5).toISOString();
+ const q=(t,sel,col)=>sb.from(t).select(sel).gte(col,A).lt(col,B);
+ const x=await Promise.all([q('sales','id,paid,discount,sale_items(qty,price,cost),sale_returns(qty,price,cost,cash_refund)','sold_at'),q('payments','amount','created_at'),(hasFeature('expenses')?q('expenses','amount','created_at'):Promise.resolve({data:[]})),q('stock_in','paid','created_at'),q('supplier_payments','amount','created_at'),q('sale_returns','cash_refund','created_at')]);
+ x.forEach(bad);const g=i=>x[i].data||[];ST.CL={s:g(0),p:g(1),e:g(2),si:g(3),sp:g(4),rt:g(5)}}
+function vMore(){const b=(t,l)=>'<button class="b o w" style="margin-bottom:10px" onclick="go(\''+t+'\')">'+l+'</button>';return '<h2>More</h2>'+b('rec','Bill ka Record')+(own()?b('close','Roz ka Hisaab')+(hasFeature('expenses')?b('exp','Kharcha'):'')+(hasFeature('suppliers')?b('sup','Supplier ka Hisaab'):'')+b('trash','Trash')+b('bk','Backup'):'')+(ST.admin?b('adm','Admin Panel'):'')+'<button class="b o w" style="margin-bottom:10px" onclick="logout()">Logout</button>'}
+function vSettings(){const link=(label,kind)=>'<div class="settings-link" onclick="showInfo(\''+kind+'\')"><span>'+label+'</span><span>›</span></div>';return '<h2>App Settings</h2><div class="card settings-section"><h3>Help & Support</h3>'+link('Help & Support','help')+link('Report a Problem','report')+link('Contact Us','contact')+'</div><div class="card settings-section"><h3>App Information</h3>'+link('Privacy Policy','privacy')+link('Terms & Conditions','terms')+link('About Us','about')+link('Language: '+esc(getLangLabel()),'language')+'<p class="mut" style="margin:10px 0 0">App Version: 1.0<br>Developer: Ahmad Edits (AE40)</p></div><div class="card settings-section"><h3>AE40 Digital Services</h3><p class="mut">Digital solutions for small businesses</p>'+['Video Editing','Graphic Designing','AI Content Creation','Website Development','Google Business Profile Setup & Optimization','Google Forms & Sheets','Make.com Automation','Email & WhatsApp Automation'].map(x=>'<div class="settings-link"><span>'+esc(x)+'</span></div>').join('')+'<button class="b w" style="margin-top:12px" onclick="showInfo(\'contact\')">Contact AE40</button></div><div class="card settings-section"><h3>Account</h3><button class="b o w" onclick="logout()">Logout</button></div>'}
+function vRec(){return '<h2>Bill ka Record</h2>'+(ST.R.map(s=>'<div class="card"><div class="row"><b>'+inv(s)+'</b><span class="mut">'+fm(s.sold_at)+'</span></div><div>'+esc(gc(s.customer_id).name)+'</div><div class="mut">Total '+R(NT(s))+' | Paid '+R(s.paid)+(s.discount>0?' | Discount '+R(s.discount):'')+'</div>'+(s.sale_returns.length?'<div class="mut">Wapsi: '+s.sale_returns.map(r=>esc(gp(r.product_id).name)+' x'+r.qty).join(', ')+'</div>':'')+'<div class="row" style="margin-top:8px;justify-content:flex-start;flex-wrap:wrap"><button class="b o s" onclick="pr(\''+s.id+'\')">Print</button><button class="b o s" onclick="retn(\''+s.id+'\')">Wapsi</button>'+(own()?'<button class="b o s" onclick="editPaid(\''+s.id+'\')">Paid badlein</button><button class="b o s bad" onclick="delSale(\''+s.id+'\')">Delete</button>':'')+'</div></div>').join('')||'<p class="mut">Abhi koi bill nahi.</p>')+(own()?'<h2 style="margin-top:20px">Badlao ka record</h2><div class="card">'+(ST.L.map(l=>'<div class="row mut"><span>'+esc(l.action)+'</span><span>'+fm(l.created_at)+' ('+esc(l.role||'')+')</span></div>').join('')||'<span class="mut">Abhi koi badlao nahi.</span>')+'</div>':'')}
+function pr(id){const s=gs(id);$('rc').innerHTML='<h2 style="text-align:center">'+esc(ST.me.shop_name)+'</h2><p>'+inv(s)+' | '+fm(s.sold_at)+'<br>Customer: '+esc(gc(s.customer_id).name)+'</p><hr>'+s.sale_items.map(i=>'<div>'+esc(gp(i.product_id).name)+' x'+i.qty+' = '+R(i.qty*i.price)+'</div>').join('')+(s.discount>0?'<div>Discount: -'+R(s.discount)+'</div>':'')+'<hr><div>Total: '+R(NT(s))+'</div><div>Paid: '+R(s.paid)+'</div><div>Baqaya: '+R(NT(s)-s.paid+RF(s))+'</div><p style="text-align:center">Shukriya!</p>';setTimeout(()=>print(),60)}
+async function retn(id){const s=gs(id),v=await ask('Wapsi - '+inv(s),[['p','Product','sel',s.sale_items.map(i=>[i.product_id,gp(i.product_id).name+' (x'+i.qty+')'])],['q','Kitni wapas','number',1],['c','Cash wapas diya?','sel',[['y','Haan'],['n','Nahi (udhaar mein kam)']]]]);if(!v)return;const i=s.sale_items.find(x=>x.product_id==v[0]),dn=sum(s.sale_returns.filter(r=>r.product_id==v[0]),r=>r.qty);if(!(v[1]>0)||v[1]>i.qty-dn)return toast('Qty galat. Wapsi ho sakti hai: '+(i.qty-dn));const r=await sb.from('sale_returns').insert({sale_id:id,product_id:v[0],qty:v[1],price:i.price,cost:i.cost,cash_refund:v[2]=='y'?v[1]*i.price:0});if(bad(r))return;lg('Wapsi '+inv(s)+' '+gp(v[0]).name+' x'+v[1]);await Promise.all([load(),loadRec()]);draw()}
+async function editPaid(id){if(!own())return toast('Paid raqam sirf Owner badal sakta hai.');const s=gs(id),v=await ask('Paid badlein - '+inv(s),[['p','Nayi paid raqam (Rs)','number',s.paid]]);if(!v)return;if(isNaN(v[0])||v[0]<0)return toast('Sahi raqam likhein');const r=await sb.from('sales').update({paid:v[0]}).eq('id',id);if(bad(r))return;lg(inv(s)+' paid '+s.paid+' se '+v[0]);await Promise.all([load(),loadRec()]);draw()}
+async function delSale(id){if(!own())return toast('Bill delete sirf Owner kar sakta hai.');if(!twice(delSale,id))return;const s=gs(id),r=await sb.from('sales').delete().eq('id',id);if(bad(r))return;lg('Bill delete '+inv(s));await Promise.all([load(),loadRec()]);draw()}
+function vExp(){if(!hasFeature('expenses'))return '<p class="mut">Ye feature aap ke package mein available nahi.</p>';const m=ymd().slice(0,7);return '<h2>Kharcha</h2><button class="b w" onclick="addExp()">+ Naya Kharcha</button><div class="card" style="margin-top:12px"><div class="row"><b>Is mahine ka kharcha</b><b class="bad">'+R(sum(ST.X.filter(e=>dk(e.created_at).slice(0,7)==m),e=>e.amount))+'</b></div></div>'+(ST.X.map(e=>'<div class="card"><div class="row"><b>'+esc(e.category)+'</b><b>'+R(e.amount)+'</b></div><div class="mut">'+fm(e.created_at)+(e.note?' | '+esc(e.note):'')+'</div><button class="b o s bad" style="margin-top:6px" onclick="delExp(\''+e.id+'\')">Delete</button></div>').join('')||'<p class="mut">Abhi koi kharcha nahi.</p>')}
+async function addExp(){if(!needFeature('expenses','Kharcha'))return;if(!own())return toast('Kharcha sirf Owner add kar sakta hai.');const v=await ask('Naya Kharcha',[['c','Qisam','sel',['Bijli','Kiraya','Tankhwah','Transport','Aur'].map(x=>[x,x])],['a','Raqam (Rs)','number'],['n','Note (optional)']]);if(!v)return;if(!(v[1]>0))return toast('Raqam 0 se zyada likhein');const r=await sb.from('expenses').insert({category:v[0],amount:v[1],note:v[2]||null});if(bad(r))return;await loadExp();draw()}
+async function delExp(id){if(!needFeature('expenses','Kharcha'))return;if(!own())return toast('Kharcha delete sirf Owner kar sakta hai.');if(!twice(delExp,id))return;const e=ST.X.find(x=>x.id==id),r=await sb.from('expenses').delete().eq('id',id);if(bad(r))return;lg('Kharcha delete '+e.category+' '+e.amount);await loadExp();draw()}
+function vClose(){const d=ST.cd,c=ST.CL,cs=sum(c.s,x=>x.paid),pi=sum(c.p,x=>x.amount),xe=sum(c.e,x=>x.amount),so=sum(c.si,x=>x.paid)+sum(c.sp,x=>x.amount),rf=sum(c.rt,x=>x.cash_refund),cash=cs+pi-rf-xe-so;
+ const r=(l,v,k)=>'<div class="row" style="padding:7px 0;border-bottom:1px solid var(--line)"><span>'+l+'</span><b class="'+(k||'')+'">'+R(v)+'</b></div>';
+ return '<h2>Roz ka Hisaab</h2><div class="card"><label>Tareekh</label><input type="date" value="'+d+'" onchange="ST.cd=this.value;go(\'close\')"></div><div class="hero"><small>Galle mein hona chahiye</small><div>'+R(cash)+'</div><small>'+c.s.length+' bill</small></div><div class="card">'+r('Bikri (total bill)',sum(c.s,NT))+r('Bikri se cash aaya',cs)+r('Purana udhaar wasool',pi)+r('Naya udhaar diya',sum(c.s,x=>Math.max(0,NT(x)-x.paid)),'bad')+r('Wapsi (cash diya)',rf,'bad')+(hasFeature('expenses')?r('Kharcha',xe,'bad'):'')+r('Supplier / maal ka cash',so,'bad')+r('Munafa (kharcha ke baad)',sum(c.s,NP)-xe)+'</div>'}
+const bkNag=()=>{if(!own())return'';let t=0;try{t=+(localStorage.getItem('bk')||0)}catch(e){}return Date.now()-t>6048e5?'<div class="card"><b>Backup lein</b><p class="mut">Haftay mein ek backup zaroor download karein.</p><button class="b w" onclick="go(\'bk\')">Backup page kholein</button></div>':''};
+const exCard=()=>{const l=ST.P.filter(p=>p.expiry&&p.expiry<=dk(Date.now()+30*864e5)&&stock(p.id)>0);return l.length?'<div class="card"><b>Expiry qareeb (30 din)</b>'+l.map(p=>'<div class="row"><span>'+esc(p.name)+'</span><span class="'+(p.expiry<ymd()?'bad':'')+'">'+p.expiry+'</span></div>').join('')+'</div>':''};
+async function stockIn(){if(!own())return toast('Stock-in sirf Owner kar sakta hai.');if(!ST.P.length)return toast('Pehle product add karein');const v=await ask('Maal aaya',[['p','Product','sel',ST.P.map(p=>[p.id,p.name])],['q','Qty','number'],['c','Cost per unit (Rs, khali = purani)','number'],['s','Supplier','sel',[['','Koi nahi']].concat(ST.S.map(s=>[s.id,s.name]))],['d','Supplier ko abhi diya (Rs, khali = poora)','number']]);if(!v)return;if(!(v[1]>0))return toast('Qty 0 se zyada likhein');const c=isNaN(v[2])?gp(v[0]).cost:v[2],paid=v[3]&&!isNaN(v[4])?v[4]:v[1]*c;const r=await sb.from('stock_in').insert({product_id:v[0],qty:v[1],cost:c,supplier_id:v[3]||null,paid:paid});if(bad(r))return;await load();draw()}
+async function stockCorrect(){
+ if(!own())return toast('Stock correction sirf Owner kar sakta hai.');
+ if(!ST.P.length)return toast('Pehle product add karein.');
+ const v=await ask('Stock Correction',[['p','Product','sel',ST.P.map(p=>[p.id,p.name+' (maujooda: '+stock(p.id)+' '+p.unit+')'])],['q','Stock mein tabdeeli (+ add / - kam)','number'],['r','Wajah / Note','text']]);
+ if(!v)return;
+ const delta=v[1],reason=(v[2]||'').trim();
+ if(!Number.isFinite(delta)||delta===0)return toast('Qty zero na ho. Misal: +5 ya -2.');
+ if(!reason)return toast('Correction ki wajah likhna zaroori hai.');
+ const {data:{user},error:userErr}=await sb.auth.getUser();
+ if(userErr||!user?.id)return toast('Login user verify nahi hua. Correction nahi ki.');
+ const fresh=await sb.from('product_stock').select('stock').eq('product_id',v[0]).maybeSingle();
+ if(fresh.error||!fresh.data)return toast('Current stock verify nahi hua. Correction nahi ki.');
+ const current=Number(fresh.data.stock)||0;
+ if(delta<0&&Math.abs(delta)>current)return toast('Itna stock kam nahi kar sakte. Maujooda stock: '+current);
+ if(!ST.me?.shop_id)return toast('Shop ID verify nahi hui. Correction nahi ki.');
+ if(!confirm('Maujooda stock '+current+' hai. '+(delta>0?'+':'')+delta+' adjust karna hai? Wajah: '+reason))return;
+ const r=await sb.from('stock_adjustments').insert({shop_id:ST.me.shop_id,product_id:v[0],qty:delta,reason,created_by:user.id});
+ if(bad(r))return;
+ lg('Stock correction '+gp(v[0]).name+' '+(delta>0?'+':'')+delta+' | '+reason);
+ await load();draw();toast('Stock correction save ho gayi.');
+}
+async function loadSup(){const [a,b]=await Promise.all([sb.from('suppliers').select('id,name,phone').is('deleted_at',null).order('name'),sb.from('supplier_balance').select('supplier_id,balance')]);[a,b].forEach(bad);ST.S=a.data||[];ST.SB=Object.fromEntries((b.data||[]).map(x=>[x.supplier_id,+x.balance]))}
+function vSup(){if(!hasFeature('suppliers'))return '<p class="mut">Ye feature aap ke package mein available nahi.</p>';return '<h2>Supplier</h2><button class="b w" style="margin-bottom:12px" onclick="addSup()">+ Naya Supplier</button>'+searchBox('supplier','Supplier ka naam ya phone search karein')+'<p id="search-empty-supplier" class="mut" style="display:none">Koi supplier nahi mila.</p>'+(ST.S.map(s=>{const b=ST.SB[s.id]||0;return '<div class="card" data-search-kind="supplier" data-search="'+esc(s.name+' '+(s.phone||''))+'"><div class="row"><b>'+esc(s.name)+'</b><b class="'+(b>0?'bad':'')+'">'+R(b)+'</b></div><div class="mut">'+esc(s.phone||'Phone nahi')+' | Dena baqi</div><button class="b o s" style="margin-top:8px" onclick="paySup(\''+s.id+'\')">Payment di</button>'+(own()?'<button class="b o s bad" style="margin:8px 0 0 8px" onclick="moveTrash(\'suppliers\',\''+s.id+'\')">Trash mein bhejein</button>':'')+'</div>'}).join('')||'<p class="mut">Pehle supplier add karein.</p>')}
+async function addSup(){if(!needFeature('suppliers','Supplier'))return;const v=await ask('Naya Supplier',[['n','Naam'],['p','Phone','tel']]);if(!v)return;if(!v[0].trim())return toast('Naam likhein');const r=await sb.from('suppliers').insert({name:v[0].trim(),phone:v[1]||null});if(bad(r))return;await loadSup();draw()}
+async function paySup(id){if(!needFeature('suppliers','Supplier'))return;const s=ST.S.find(x=>x.id==id),v=await ask('Supplier ko payment - '+s.name,[['a','Raqam (Rs)','number'],['n','Note (optional)']]);if(!v)return;if(!(v[0]>0))return toast('Raqam 0 se zyada likhein');const r=await sb.from('supplier_payments').insert({supplier_id:id,amount:v[0],note:v[1]||null});if(bad(r))return;await loadSup();toast('Payment save ho gayi');draw()}
+async function openStm(id){if(!needFeature('statements','Customer Hisaab'))return;ST.cs=id;const [s,p]=await Promise.all([sb.from('sales').select('inv_no,sold_at,paid,discount,sale_items(qty,price),sale_returns(qty,price,cash_refund)').eq('customer_id',id),sb.from('payments').select('amount,created_at,note').eq('customer_id',id)]);[s,p].forEach(bad);ST.SM=[...(s.data||[]).map(x=>({t:x.sold_at,l:inv(x),dr:NT(x)+RF(x),cr:x.paid})),...(p.data||[]).map(x=>({t:x.created_at,l:'Payment'+(x.note?' ('+x.note+')':''),dr:0,cr:x.amount}))].sort((a,b)=>a.t<b.t?-1:1);ST.tab='stm';draw()}
+function vStm(){let b=0;const c=gc(ST.cs);return '<h2>Hisaab - '+esc(c.name)+'</h2><div class="card" style="overflow-x:auto"><table class="l"><tr><th>Tareekh</th><th>Bill</th><th>Jama</th><th>Baqaya</th></tr>'+ST.SM.map(x=>{b+=x.dr-x.cr;return '<tr><td>'+fm(x.t)+'<br><small class="mut">'+esc(x.l)+'</small></td><td>'+(x.dr?R(x.dr):'')+'</td><td>'+(x.cr?R(x.cr):'')+'</td><td>'+R(b)+'</td></tr>'}).join('')+'</table></div><button class="b w" onclick="prStm()">Print / PDF</button>'}
+function prStm(){const c=gc(ST.cs);$('rc').innerHTML='<h2 style="text-align:center">'+esc(ST.me.shop_name)+'</h2><p>Hisaab: '+esc(c.name)+'<br>'+fm(Date.now())+'</p>'+document.querySelector('table.l').outerHTML+'<p><b>Baqaya: '+R(ST.bal[c.id]||0)+'</b></p>';setTimeout(()=>print(),60)}
+async function editLim(id){if(!needFeature('credit_limit','Udhaar Limit'))return;if(!own())return toast('Udhaar limit sirf Owner badal sakta hai.');const c=gc(id),v=await ask('Udhaar limit - '+c.name,[['l','Limit (Rs, 0 = koi limit nahi)','number',c.credit_limit||0]]);if(!v)return;if(isNaN(v[0])||v[0]<0)return toast('Sahi raqam likhein');const r=await sb.from('customers').update({credit_limit:v[0]}).eq('id',id);if(bad(r))return;lg('Limit '+c.name+' '+v[0]);await load();draw()}
+
+async function loadTrash(){
+ const tables=['products','customers','suppliers'];
+ const rs=await Promise.all(tables.map(t=>sb.from(t).select('id,name,deleted_at').not('deleted_at','is',null).order('deleted_at',{ascending:false})));
+ rs.forEach(bad);ST.TR=[];
+ tables.forEach((t,i)=>(rs[i].data||[]).forEach(x=>ST.TR.push({...x,table:t})));
+}
+async function moveTrash(table,id){
+ if(!own())return toast('Sirf Owner ye kar sakta hai.');
+ const {data:{user},error:userErr}=await sb.auth.getUser();
+ if(userErr||!user?.id)return toast('Login user verify nahi ho saka. Trash action nahi kiya.');
+ if(table==='customers'){const b=await sb.from('customer_balance').select('balance').eq('customer_id',id).maybeSingle();if(b.error)return toast('Balance check nahi ho saka. Delete nahi kiya.');if(+b.data?.balance>0)return toast('Is customer ka '+R(b.data.balance)+' udhaar baqi hai. Pehle payment receive karein.');}
+ if(table==='suppliers'){const b=await sb.from('supplier_balance').select('balance').eq('supplier_id',id).maybeSingle();if(b.error)return toast('Supplier balance check nahi ho saka. Delete nahi kiya.');if(+b.data?.balance>0)return toast('Is supplier ka '+R(b.data.balance)+' dena baqi hai. Pehle hisaab clear karein.');}
+ if(!confirm('Is record ko Trash mein bhejna hai?'))return;
+ const r=await sb.from(table).update({deleted_at:new Date().toISOString(),deleted_by:user.id}).eq('id',id);
+ if(bad(r))return;toast('Record Trash mein chala gaya.');
+ if(table==='suppliers')await loadSup();else await load();draw();
+}
+async function restoreTrash(table,id){
+ if(!own())return toast('Sirf Owner restore kar sakta hai.');
+ const r=await sb.from(table).update({deleted_at:null,deleted_by:null}).eq('id',id);
+ if(bad(r))return;toast('Record restore ho gaya.');await loadTrash();if(table==='suppliers')await loadSup();else await load();draw();
+}
+async function permanentTrash(table,id){
+ if(!own())return toast('Sirf Owner ye kar sakta hai.');
+ if(!confirm('Permanent Delete? Ye action wapas nahi ho sakta. Agar record kisi bill/payment/stock se linked hua to database deletion rok dega.'))return;
+ const r=await sb.from(table).delete().eq('id',id);
+ if(r.error){toast('Delete nahi hua: record doosre hisaab se linked ho sakta hai. Pehle linked records ka masla safely resolve karna hoga.');return}
+ toast('Record permanently delete ho gaya.');await loadTrash();if(table==='suppliers')await loadSup();else await load();draw();
+}
+function vTrash(){
+ if(!own())return '<h2>Trash</h2><p class="mut">Sirf Owner Trash access kar sakta hai.</p>';
+ return '<h2>Trash</h2><p class="mut">Yahan se record restore ya permanently delete kar sakte hain. Auto-delete nahi hota.</p>'+
+ (ST.TR.map(x=>'<div class="card"><div class="row"><b>'+esc(x.name)+'</b><span class="bdg">'+x.table+'</span></div><div class="mut">Trash: '+(x.deleted_at?fm(x.deleted_at):'')+'</div><div class="row" style="margin-top:8px"><button class="b o s" onclick="restoreTrash(\''+x.table+'\',\''+x.id+'\')">Restore</button><button class="b o s bad" onclick="permanentTrash(\''+x.table+'\',\''+x.id+'\')">Permanent Delete</button></div></div>').join('')||'<p class="mut">Trash khali hai.</p>');
+}
+function vBk(){return '<h2>Backup</h2><div class="card"><p class="mut">Poora data ek file mein download hota hai. Hafte mein ek baar lein aur file kisi mehfooz jagah rakhein.</p><button class="b w" onclick="bkp()">Poora Backup (JSON)</button></div><div class="card"><b>Google Account</b><p id="googleStatus" class="mut">Connection status check ho raha hai...</p><button class="b w" onclick="connectGoogle()">Connect / Reconnect Google Account</button><button class="b o w" style="margin-top:8px" onclick="loadGoogleStatus()">Refresh Status</button><button class="b w" style="margin-top:8px" onclick="backupGoogleSheets()">Create Google Sheets Backup</button></div><div class="card"><b>Excel ke liye CSV</b><div class="row" style="margin-top:8px;justify-content:flex-start"><button class="b o s" onclick="csv(\'p\')">Products</button><button class="b o s" onclick="csv(\'c\')">Customers</button><button class="b o s" onclick="csv(\'s\')">Sales</button></div></div>'}
+async function loadGoogleStatus(){
+ const el=$('googleStatus');if(el)el.textContent='Connection status check ho raha hai...';
+ try{
+  const {data:{session},error}=await sb.auth.getSession();
+  if(error||!session?.access_token){if(el)el.textContent='Login session nahi mili. Dobara login karein.';return}
+  const r=await fetch(SUPABASE_URL+'/functions/v1/ae40-google-backup',{
+   method:'POST',
+   headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},
+   body:JSON.stringify({action:'status'})
+  });
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok||data.error){if(el)el.textContent='Status check nahi ho saka: '+(data.error||'Server error');return}
+  if(el)el.textContent=data.connected?'Connected ✓  |  '+(data.email||'Google email unavailable'):'Not connected';
+ }catch(e){if(el)el.textContent='Status check nahi ho saka. Internet check karein.'}
+}
+async function backupGoogleSheets(){
+ const popup=window.open('about:blank','_blank');
+ const {data:{session},error}=await sb.auth.getSession();
+ if(error||!session?.access_token){if(popup)popup.close();return toast('Pehle dobara login karein.')}
+ toast('Google Sheets backup ban raha hai...');
+ try{
+  const r=await fetch(SUPABASE_URL+'/functions/v1/ae40-google-backup',{
+   method:'POST',
+   headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},
+   body:JSON.stringify({action:'backup'})
+  });
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok||!data.success){if(popup)popup.close();return toast(data.error||'Google backup nahi ban saka.')}
+  if(popup&&data.spreadsheet_url)popup.location.href=data.spreadsheet_url;
+  toast('Google Sheets backup create ho gaya.');
+ }catch(e){if(popup)popup.close();toast('Backup request fail hui. Internet check karein.')}
+}
+async function connectGoogle(){
+ const {data:{session},error}=await sb.auth.getSession();
+ if(error||!session?.access_token)return toast('Pehle dobara login karein.');
+ const popup=window.open('about:blank','_blank');
+ try{
+  const r=await fetch(SUPABASE_URL+'/functions/v1/ae40-google-backup',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},body:'{}'});
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok||!data.url){if(popup)popup.close();return toast(data.error||'Google connection shuru nahi ho saki.')}
+  if(popup)popup.location.href=data.url;else window.location.href=data.url;
+ }catch(e){if(popup)popup.close();toast('Connection error. Internet check karein.')}
+}
+function dl(n,t,y){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:y}));a.download=n;a.click()}
+async function all(t){let a=[],i=0;for(;;){const r=await sb.from(t).select('*').order('id').range(i,i+999);if(r.error){bad(r);break}a=a.concat(r.data);if(r.data.length<1000)break;i+=1000}return a}
+async function bkp(){const T=['products','customers','suppliers','sales','sale_items','sale_returns','stock_in','stock_adjustments','payments','supplier_payments','expenses'],x=await Promise.all(T.map(all)),o={shop:ST.me.shop_name,date:new Date().toISOString()};T.forEach((t,i)=>o[t]=x[i]);dl('backup_'+ymd()+'.json',JSON.stringify(o),'application/json');try{localStorage.setItem('bk',Date.now())}catch(e){}toast('Backup download ho gaya')}
+async function csv(k){const m={p:['products',['name','unit','cost','price','opening_stock','reorder_level','expiry']],c:['customers',['name','phone','address','credit_limit','due_date']],s:['sales',['inv_no','sold_at','customer_id','discount','paid','due_date']]}[k],rows=await all(m[0]),q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';if(k=='s')rows.forEach(r=>r.customer_id=gc(r.customer_id).name);dl(m[0]+'_'+ymd()+'.csv','\ufeff'+[m[1].join(',')].concat(rows.map(r=>m[1].map(c=>q(r[c])).join(','))).join('\n'),'text/csv')}
+const PL=[['basic','Basic'],['standard','Standard'],['premium','Premium']],pd=d=>d?(d<ymd()?'<span class="bad">'+d+' (khatam)</span>':d):'koi expiry nahi';
+async function loadAdm(){const r=await sb.rpc('admin_shops');bad(r);ST.AD=r.data||[]}
+function vAdm(){return '<h2>Admin Panel</h2><button class="b w" style="margin-bottom:12px" onclick="admNew()">+ Nayi Dukan</button>'+(ST.AD.map(s=>'<div class="card"><div class="row"><b>'+esc(s.name)+'</b><span class="bdg">'+esc(s.plan)+'</span></div><div class="mut">Paid till: '+pd(s.paid_till)+' | '+(s.active?'Chalu':'<span class="bad">Band</span>')+' | Users '+s.users.length+'/'+s.max_users+'</div>'+s.users.map(u=>'<div class="row mut"><span>'+esc(u.email)+' ('+u.role+')</span><a onclick="admUnlink(\''+u.user_id+'\')">hatayein</a></div>').join('')+'<div class="row" style="margin-top:8px;justify-content:flex-start;flex-wrap:wrap"><button class="b o s" onclick="admExt(\''+s.id+'\')">+ Din</button><button class="b o s" onclick="admPlan(\''+s.id+'\')">Plan</button><button class="b o s" onclick="admUser(\''+s.id+'\')">User jorein</button><button class="b o s '+(s.active?'bad':'')+'" onclick="admAct(\''+s.id+'\','+!s.active+')">'+(s.active?'Band karein':'Chalu karein')+'</button><button class="b o s bad" onclick="admDel(\''+s.id+'\')">Delete</button></div></div>').join('')||'<p class="mut">Abhi koi dukan nahi.</p>')}
+async function admDo(fn,args,ok){const r=await sb.rpc(fn,args);if(bad(r))return;await loadAdm();if(ok)toast(ok);draw()}
+async function admNew(){const v=await ask('Nayi Dukan',[['n','Dukan ka naam'],['p','Package','sel',PL],['d','Free trial / paid din','number',14]]);if(!v)return;admDo('admin_new_shop',{p_name:v[0],p_plan:v[1],p_days:isNaN(v[2])?0:v[2]},'Dukan ban gayi. Ab Authentication mein user banayein, phir User jorein dabayein.')}
+async function admExt(id){const v=await ask('Kitne din barhane hain?',[['d','Din','number',30]]);if(!v||!(v[0]>0))return;admDo('admin_extend',{p_shop:id,p_days:v[0]},'Din barh gaye')}
+async function admPlan(id){const v=await ask('Package badlein',[['p','Package','sel',PL]]);if(!v)return;admDo('admin_set_shop',{p_shop:id,p_plan:v[0]},'Package badal gaya')}
+async function admAct(id,on){if(!on&&!confirm('Dukan band karein? Us ke users login nahi kar sakein ge.'))return;admDo('admin_set_shop',{p_shop:id,p_active:on})}
+async function admUser(id){const v=await ask('User jorein',[['e','User ka email (pehle Authentication mein banayein)','email'],['r','Role','sel',[['owner','Owner'],['staff','Staff']]]]);if(!v||!v[0].trim())return;admDo('admin_link_user',{p_email:v[0].trim(),p_shop:id,p_role:v[1]},'User jur gaya')}
+async function admUnlink(u){if(!confirm('Is user ko dukan se hatayein?'))return;admDo('admin_unlink_user',{p_user:u},'User hata diya')}
+async function admDel(id){const s=ST.AD.find(x=>x.id==id),v=await ask('Dukan hamesha ke liye delete',[['n','Sab data aur users khatam ho jayein ge. Confirm karne ke liye dukan ka naam likhein: '+esc(s.name)]]);if(!v)return;if(v[0].trim()!=s.name)return toast('Naam match nahi hua. Delete nahi hui.');admDo('admin_delete_shop',{p_shop:id},'Dukan delete ho gayi')}
+
+// ===== AE40 APP INFORMATION / SUPPORT =====
+const AE40_CONTACT={whatsapp:'03105529587',email:'editsahmad40@gmail.com',hours:'9:00 AM – 10:00 PM'};
+
+// ===== Full app language layer: English, Urdu and Roman Urdu =====
+const AE40_I18N={
+en:{
+'Apne email aur password se login karein.':'Log in with your email and password.','Privacy Policy':'Privacy Policy','Terms &amp; Conditions':'Terms & Conditions','Terms & Conditions':'Terms & Conditions','Contact Us':'Contact Us','About Us':'About Us','Developed by':'Developed by','More':'More','Settings':'Settings','App Settings':'App Settings','Help & Support':'Help & Support','Report a Problem':'Report a Problem','App Information':'App Information','Language:':'Language:','Digital solutions for small businesses':'Digital solutions for small businesses','Contact AE40':'Contact AE40','Logout':'Logout','Bill ka Record':'Bill Records','Roz ka Hisaab':'Daily Closing','Kharcha':'Expenses','Supplier ka Hisaab':'Supplier Ledger','Trash':'Trash','Backup':'Backup','Admin Panel':'Admin Panel','Nayi Bikri':'New Sale','Customer':'Customer','Maal':'Products','Bikri':'Sales','Home':'Home','Aaj ki Sale':'Today’s Sales','bill aaj':'bills today','Udhaar (Baqaya)':'Outstanding Credit','Aaj ka Munafa':'Today’s Profit','Products':'Products','Kam Stock':'Low Stock','Kam stock wali cheezein':'Low-stock products','Sab cheezon ka stock theek hai.':'All product stock levels are healthy.','Naya Product':'New Product','Maal aaya':'Stock In','Stock Correction':'Stock Correction','Product ka naam search karein':'Search product name','Is naam ka product nahi mila.':'No product found with this name.','Product add karne ki ijazat nahi.':'You do not have permission to add products.','Naam':'Name','Unit':'Unit','Cost price (Rs)':'Cost Price (Rs)','Sale price (Rs)':'Sale Price (Rs)','Pehle ka stock':'Opening Stock','Reorder level':'Reorder Level','Expiry date (khali = nahi)':'Expiry Date (leave blank if none)','Naam, cost aur sale price zaroori hain':'Name, cost price and sale price are required.','Edit':'Edit','Trash mein bhejein':'Move to Trash','Abhi koi product nahi. Naya product add karein.':'No products yet. Add a new product.','Naya Customer':'New Customer','Customer ka naam ya phone search karein':'Search customer name or phone','Koi customer nahi mila.':'No customer found.','Phone nahi':'No phone number','Payment Receive':'Receive Payment','Hisaab':'Ledger','Limit':'Limit','SMS Reminder':'SMS Reminder','Abhi koi customer nahi.':'No customers yet.','Naam likhein':'Enter name','Phone':'Phone','Address':'Address','Udhaar limit (Rs, khali = koi limit nahi)':'Credit limit (Rs; leave blank for no limit)','Nayi Supplier':'New Supplier','Supplier':'Supplier','Supplier ka naam ya phone search karein':'Search supplier name or phone','Koi supplier nahi mila.':'No supplier found.','Dena baqi':'Payable','Payment di':'Make Payment','Pehle supplier add karein.':'Add a supplier first.','Raqam (Rs)':'Amount (Rs)','Note (optional)':'Note (optional)','Nayi Kharcha':'New Expense','Qisam':'Category','Bijli':'Electricity','Kiraya':'Rent','Tankhwah':'Salary','Transport':'Transport','Aur':'Other','Raqam 0 se zyada likhein':'Enter an amount greater than zero.','Tareekh':'Date','Total':'Total','Paid':'Paid','Discount':'Discount','Print':'Print','Delete':'Delete','Wapsi':'Return','Paid badlein':'Edit Paid Amount','Abhi koi bill nahi.':'No bills yet.','Badlao ka record':'Activity Log','Abhi koi badlao nahi.':'No activity yet.','Backup lein':'Create a backup','Poora Backup (JSON)':'Full Backup (JSON)','Google Account':'Google Account','Connect / Reconnect Google Account':'Connect / Reconnect Google Account','Refresh Status':'Refresh Status','Create Google Sheets Backup':'Create Google Sheets Backup','Excel ke liye CSV':'CSV for Excel','Customer Hisaab':'Customer Ledger','Restore':'Restore','Permanent Delete':'Permanently Delete','Admin Panel':'Admin Panel','Email':'Email','Password':'Password','Login':'Login','Close':'Close','Language':'Language','Apni preferred language select karein:':'Select your preferred language:','Save Language Preference':'Save Language','Account':'Account','App Version:':'App Version:','Developer:':'Developer:','Video Editing':'Video Editing','Graphic Designing':'Graphic Design','AI Content Creation':'AI Content Creation','Website Development':'Website Development','Google Business Profile Setup & Optimization':'Google Business Profile Setup & Optimization','Google Forms & Sheets':'Google Forms & Sheets','Make.com Automation':'Make.com Automation','Email & WhatsApp Automation':'Email & WhatsApp Automation'
+},
+ur:{
+'Apne email aur password se login karein.':'اپنی ای میل اور پاس ورڈ سے لاگ اِن کریں۔','Privacy Policy':'رازداری کی پالیسی','Terms &amp; Conditions':'شرائط و ضوابط','Terms & Conditions':'شرائط و ضوابط','Contact Us':'رابطہ کریں','About Us':'ہمارے بارے میں','Developed by':'تیار کردہ','More':'مزید','Settings':'ترتیبات','App Settings':'ایپ کی ترتیبات','Help & Support':'مدد اور معاونت','Report a Problem':'مسئلے کی اطلاع دیں','App Information':'ایپ کی معلومات','Language:':'زبان:','Digital solutions for small businesses':'چھوٹے کاروباروں کے لیے ڈیجیٹل حل','Contact AE40':'AE40 سے رابطہ کریں','Logout':'لاگ آؤٹ','Bill ka Record':'بلوں کا ریکارڈ','Roz ka Hisaab':'روزانہ حساب','Kharcha':'اخراجات','Supplier ka Hisaab':'سپلائر کا حساب','Trash':'ردی کی ٹوکری','Backup':'بیک اپ','Admin Panel':'ایڈمن پینل','Nayi Bikri':'نئی فروخت','Customer':'کسٹمر','Maal':'سامان','Bikri':'فروخت','Home':'ہوم','Aaj ki Sale':'آج کی فروخت','bill aaj':'آج کے بل','Udhaar (Baqaya)':'ادھار (بقایاجات)','Aaj ka Munafa':'آج کا منافع','Products':'مصنوعات','Kam Stock':'کم اسٹاک','Kam stock wali cheezein':'کم اسٹاک والی اشیا','Sab cheezon ka stock theek hai.':'تمام اشیا کا اسٹاک درست ہے۔','Naya Product':'نئی پروڈکٹ','Maal aaya':'نیا اسٹاک','Stock Correction':'اسٹاک کی درستگی','Product ka naam search karein':'پروڈکٹ کا نام تلاش کریں','Is naam ka product nahi mila.':'اس نام کی کوئی پروڈکٹ نہیں ملی۔','Product add karne ki ijazat nahi.':'آپ کو پروڈکٹ شامل کرنے کی اجازت نہیں۔','Naam':'نام','Unit':'اکائی','Cost price (Rs)':'خرید قیمت (روپے)','Sale price (Rs)':'فروخت قیمت (روپے)','Pehle ka stock':'ابتدائی اسٹاک','Reorder level':'دوبارہ منگوانے کی حد','Expiry date (khali = nahi)':'میعاد ختم ہونے کی تاریخ (نہ ہو تو خالی چھوڑیں)','Naam, cost aur sale price zaroori hain':'نام، خرید قیمت اور فروخت قیمت ضروری ہیں۔','Edit':'ترمیم','Trash mein bhejein':'ردی میں بھیجیں','Abhi koi product nahi. Naya product add karein.':'ابھی کوئی پروڈکٹ نہیں۔ نئی پروڈکٹ شامل کریں۔','Naya Customer':'نیا کسٹمر','Customer ka naam ya phone search karein':'کسٹمر کا نام یا فون تلاش کریں','Koi customer nahi mila.':'کوئی کسٹمر نہیں ملا۔','Phone nahi':'فون نمبر موجود نہیں','Payment Receive':'ادائیگی وصول کریں','Hisaab':'حساب','Limit':'حد','SMS Reminder':'ایس ایم ایس یاد دہانی','Abhi koi customer nahi.':'ابھی کوئی کسٹمر نہیں۔','Naam likhein':'نام درج کریں','Phone':'فون','Address':'پتہ','Udhaar limit (Rs, khali = koi limit nahi)':'ادھار کی حد (روپے، خالی چھوڑیں تو کوئی حد نہیں)','Nayi Supplier':'نیا سپلائر','Supplier':'سپلائر','Supplier ka naam ya phone search karein':'سپلائر کا نام یا فون تلاش کریں','Koi supplier nahi mila.':'کوئی سپلائر نہیں ملا۔','Dena baqi':'واجب الادا','Payment di':'ادائیگی کریں','Pehle supplier add karein.':'پہلے سپلائر شامل کریں۔','Raqam (Rs)':'رقم (روپے)','Note (optional)':'نوٹ (اختیاری)','Nayi Kharcha':'نیا خرچ','Qisam':'قسم','Bijli':'بجلی','Kiraya':'کرایہ','Tankhwah':'تنخواہ','Transport':'ٹرانسپورٹ','Aur':'دیگر','Raqam 0 se zyada likhein':'صفر سے زیادہ رقم درج کریں۔','Tareekh':'تاریخ','Total':'کل','Paid':'ادا شدہ','Discount':'رعایت','Print':'پرنٹ','Delete':'حذف کریں','Wapsi':'واپسی','Paid badlein':'ادا شدہ رقم تبدیل کریں','Abhi koi bill nahi.':'ابھی کوئی بل نہیں۔','Badlao ka record':'تبدیلیوں کا ریکارڈ','Abhi koi badlao nahi.':'ابھی کوئی تبدیلی نہیں۔','Backup lein':'بیک اپ بنائیں','Poora Backup (JSON)':'مکمل بیک اپ (JSON)','Google Account':'گوگل اکاؤنٹ','Connect / Reconnect Google Account':'گوگل اکاؤنٹ جوڑیں / دوبارہ جوڑیں','Refresh Status':'اسٹیٹس تازہ کریں','Create Google Sheets Backup':'گوگل شیٹس بیک اپ بنائیں','Excel ke liye CSV':'ایکسِل کے لیے CSV','Customer Hisaab':'کسٹمر کا حساب','Restore':'بحال کریں','Permanent Delete':'ہمیشہ کے لیے حذف کریں','Email':'ای میل','Password':'پاس ورڈ','Login':'لاگ اِن','Close':'بند کریں','Language':'زبان','Apni preferred language select karein:':'اپنی پسندیدہ زبان منتخب کریں:','Save Language Preference':'زبان محفوظ کریں','Account':'اکاؤنٹ','App Version:':'ایپ ورژن:','Developer:':'ڈویلپر:','Video Editing':'ویڈیو ایڈیٹنگ','Graphic Designing':'گرافک ڈیزائننگ','AI Content Creation':'اے آئی مواد سازی','Website Development':'ویب سائٹ ڈیولپمنٹ','Google Business Profile Setup & Optimization':'گوگل بزنس پروفائل سیٹ اپ اور بہتری','Google Forms & Sheets':'گوگل فارمز اور شیٹس','Make.com Automation':'Make.com آٹومیشن','Email & WhatsApp Automation':'ای میل اور واٹس ایپ آٹومیشن'
+}
+};
+Object.assign(AE40_I18N.en,{"udhaar ho to kam likhein": "enter less if giving credit", "Udhaar wapsi ki tareekh": "Credit due date", "Save Sale": "Save Sale", "+ Item add karein": "+ Add Item", "Qty": "Quantity", "Product": "Product", "Koi customer nahi": "No customer", "Maujooda stock": "Current stock", "Stock mein tabdeeli (+ add / - kam)": "Stock change (+ add / - reduce)", "Wajah / Note": "Reason / Note", "Qty zero na ho. Misal: +5 ya -2.": "Quantity cannot be zero. Example: +5 or -2.", "Stock correction save ho gayi.": "Stock correction saved.", "Maal aaya": "Stock In", "Supplier ko abhi diya (Rs, khali = poora)": "Paid to supplier now (Rs; blank = full amount)", "Customer edit sirf Owner kar sakta hai.": "Only the Owner can edit customers.", "Payment save ho gayi": "Payment saved.", "Payment di": "Make Payment", "Is mahine ka kharcha": "Expenses this month", "Abhi koi kharcha nahi.": "No expenses yet.", "Kharcha sirf Owner add kar sakta hai.": "Only the Owner can add expenses.", "Kharcha delete sirf Owner kar sakta hai.": "Only the Owner can delete expenses.", "Roz ka Hisaab": "Daily Closing", "Galle mein hona chahiye": "Expected cash in drawer", "Bikri (total bill)": "Sales (total bills)", "Bikri se cash aaya": "Cash received from sales", "Purana udhaar wasool": "Old credit collected", "Naya udhaar diya": "New credit given", "Wapsi (cash diya)": "Returns (cash paid)", "Supplier / maal ka cash": "Supplier / stock payments", "Munafa (kharcha ke baad)": "Profit (after expenses)", "Backup page kholein": "Open Backup page", "Expiry qareeb (30 din)": "Expiring soon (30 days)", "Bill ka Record": "Bill Records", "Total": "Total", "Paid": "Paid", "Discount": "Discount", "Wapsi:": "Return:", "Paid badlein": "Edit Paid Amount", "Abhi koi badlao nahi.": "No changes yet.", "Poora data ek file mein download hota hai. Hafte mein ek baar lein aur file kisi mehfooz jagah rakhein.": "All data is downloaded in one file. Create a backup weekly and keep it somewhere safe.", "Connection status check ho raha hai...": "Checking connection status...", "Login session nahi mili. Dobara login karein.": "Login session not found. Please log in again.", "Status check nahi ho saka. Internet check karein.": "Could not check status. Check your internet connection.", "Google Sheets backup create ho gaya.": "Google Sheets backup created.", "Google backup nahi ban saka.": "Google backup could not be created.", "Nayi Dukan": "New Shop", "Dukan ka naam": "Shop Name", "Package": "Package", "Free trial / paid din": "Free trial / paid days", "Dukan ban gayi. Ab Authentication mein user banayein, phir User jorein dabayein.": "Shop created. Create a user in Authentication, then select Add User.", "User ka email (pehle Authentication mein banayein)": "User email (create it in Authentication first)", "Role": "Role", "User jorein": "Add User", "User jur gaya": "User linked", "Dukan delete ho gayi": "Shop deleted", "Aap ka account kisi dukan se juda nahi hai. Admin se rabta karein.": "Your account is not linked to a shop. Contact the administrator.", "Aap ki subscription khatam ho gayi hai. Dobara shuru karne ke liye admin se rabta karein.": "Your subscription has expired. Contact the administrator to renew it.", "Email ya password galat hai.": "Incorrect email or password.", "Is email ki confirmation baqi hai. Admin se rabta karein.": "This email is awaiting confirmation. Contact the administrator.", "Login nahi ho saka:": "Login failed:", "Feature access aap ke role aur package par depend karta hai.": "Feature access depends on your role and package.", "Sirf Owner Trash access kar sakta hai.": "Only the Owner can access Trash.", "Yahan se record restore ya permanently delete kar sakte hain. Auto-delete nahi hota.": "You can restore records or permanently delete them here. Records are not auto-deleted.", "Trash khali hai.": "Trash is empty.", "Pehle product add karein": "Add a product first", "Qty 0 se zyada likhein": "Enter a quantity greater than zero", "Naam aur tamam prices / reorder level sahi likhein.": "Enter a valid name, prices and reorder level.", "Product update ho gaya.": "Product updated.", "Supplier ko payment -": "Payment to supplier -", "Customer edit": "Customer Edit", "Product Edit": "Product Edit", "Payment Receive -": "Receive Payment -", "Raqam 0 se zyada likhein": "Enter an amount greater than zero", "App Version:": "App Version:", "Developer:": "Developer:"});
+Object.assign(AE40_I18N.ur,{"udhaar ho to kam likhein": "ادھار ہو تو کم رقم درج کریں", "Udhaar wapsi ki tareekh": "ادھار واپسی کی تاریخ", "Save Sale": "فروخت محفوظ کریں", "+ Item add karein": "+ آئٹم شامل کریں", "Qty": "مقدار", "Product": "پروڈکٹ", "Koi customer nahi": "کوئی کسٹمر نہیں", "Maujooda stock": "موجودہ اسٹاک", "Stock mein tabdeeli (+ add / - kam)": "اسٹاک میں تبدیلی (+ بڑھائیں / - کم کریں)", "Wajah / Note": "وجہ / نوٹ", "Qty zero na ho. Misal: +5 ya -2.": "مقدار صفر نہ ہو۔ مثال: +5 یا -2۔", "Stock correction save ho gayi.": "اسٹاک کی درستگی محفوظ ہو گئی۔", "Supplier ko abhi diya (Rs, khali = poora)": "سپلائر کو ابھی ادا کی گئی رقم (خالی = پوری رقم)", "Customer edit sirf Owner kar sakta hai.": "صرف مالک کسٹمر میں ترمیم کر سکتا ہے۔", "Payment save ho gayi": "ادائیگی محفوظ ہو گئی", "Is mahine ka kharcha": "اس ماہ کے اخراجات", "Abhi koi kharcha nahi.": "ابھی کوئی خرچ نہیں۔", "Kharcha sirf Owner add kar sakta hai.": "صرف مالک خرچ شامل کر سکتا ہے۔", "Kharcha delete sirf Owner kar sakta hai.": "صرف مالک خرچ حذف کر سکتا ہے۔", "Roz ka Hisaab": "روزانہ حساب", "Galle mein hona chahiye": "کیش دراز میں متوقع رقم", "Bikri (total bill)": "فروخت (کل بل)", "Bikri se cash aaya": "فروخت سے وصول شدہ نقد رقم", "Purana udhaar wasool": "پرانا ادھار وصول", "Naya udhaar diya": "نیا ادھار دیا", "Wapsi (cash diya)": "واپسی (نقد ادا کیا)", "Supplier / maal ka cash": "سپلائر / سامان کی نقد ادائیگی", "Munafa (kharcha ke baad)": "منافع (اخراجات کے بعد)", "Backup page kholein": "بیک اپ صفحہ کھولیں", "Expiry qareeb (30 din)": "جلد ختم ہونے والی اشیا (30 دن)", "Wapsi:": "واپسی:", "Poora data ek file mein download hota hai. Hafte mein ek baar lein aur file kisi mehfooz jagah rakhein.": "تمام ڈیٹا ایک فائل میں ڈاؤن لوڈ ہوتا ہے۔ ہفتے میں ایک بار بیک اپ لیں اور فائل محفوظ جگہ رکھیں۔", "Connection status check ho raha hai...": "کنکشن کی حالت چیک ہو رہی ہے...", "Login session nahi mili. Dobara login karein.": "لاگ اِن سیشن نہیں ملا۔ دوبارہ لاگ اِن کریں۔", "Status check nahi ho saka. Internet check karein.": "اسٹیٹس چیک نہیں ہو سکا۔ انٹرنیٹ چیک کریں۔", "Google Sheets backup create ho gaya.": "گوگل شیٹس بیک اپ بن گیا۔", "Google backup nahi ban saka.": "گوگل بیک اپ نہیں بن سکا۔", "Nayi Dukan": "نئی دکان", "Dukan ka naam": "دکان کا نام", "Package": "پیکیج", "Free trial / paid din": "مفت آزمائش / ادا شدہ دن", "User ka email (pehle Authentication mein banayein)": "صارف کی ای میل (پہلے Authentication میں بنائیں)", "Role": "کردار", "User jorein": "صارف شامل کریں", "User jur gaya": "صارف منسلک ہو گیا", "Dukan delete ho gayi": "دکان حذف ہو گئی", "Aap ka account kisi dukan se juda nahi hai. Admin se rabta karein.": "آپ کا اکاؤنٹ کسی دکان سے منسلک نہیں۔ ایڈمن سے رابطہ کریں۔", "Aap ki subscription khatam ho gayi hai. Dobara shuru karne ke liye admin se rabta karein.": "آپ کی سبسکرپشن ختم ہو گئی ہے۔ تجدید کے لیے ایڈمن سے رابطہ کریں۔", "Email ya password galat hai.": "ای میل یا پاس ورڈ غلط ہے۔", "Is email ki confirmation baqi hai. Admin se rabta karein.": "اس ای میل کی تصدیق باقی ہے۔ ایڈمن سے رابطہ کریں۔", "Login nahi ho saka:": "لاگ اِن نہیں ہو سکا:", "Feature access aap ke role aur package par depend karta hai.": "فیچر تک رسائی آپ کے کردار اور پیکیج پر منحصر ہے۔", "Sirf Owner Trash access kar sakta hai.": "صرف مالک ٹریش تک رسائی حاصل کر سکتا ہے۔", "Yahan se record restore ya permanently delete kar sakte hain. Auto-delete nahi hota.": "یہاں سے ریکارڈ بحال یا مستقل حذف کیا جا سکتا ہے۔ خودکار حذف نہیں ہوتا۔", "Trash khali hai.": "ٹریش خالی ہے۔", "Pehle product add karein": "پہلے پروڈکٹ شامل کریں", "Qty 0 se zyada likhein": "صفر سے زیادہ مقدار درج کریں", "Naam aur tamam prices / reorder level sahi likhein.": "درست نام، قیمتیں اور دوبارہ منگوانے کی حد درج کریں۔", "Product update ho gaya.": "پروڈکٹ اپ ڈیٹ ہو گئی۔", "Supplier ko payment -": "سپلائر کو ادائیگی -", "Customer edit": "کسٹمر میں ترمیم", "Product Edit": "پروڈکٹ میں ترمیم", "Payment Receive -": "ادائیگی وصول کریں -", "Raqam 0 se zyada likhein": "صفر سے زیادہ رقم درج کریں"});
+Object.assign(AE40_I18N.en,{"Privacy Policy": "Privacy Policy", "Terms & Conditions": "Terms & Conditions", "Dukan Manager shop management ke liye account aur business records ko process karta hai. App mein products, stock, sales, customers, suppliers aur expenses jaisi information ho sakti hai.": "Dukan Manager processes account and business records to support shop management. The app may contain information such as products, stock, sales, customers, suppliers and expenses.", "Information ka istemal app ke shop-management features chalane aur support dene ke liye ho sakta hai.": "This information may be used to operate the app’s shop-management features and provide support.", "Questions ke liye Contact Us section dekhein.": "For questions, see the Contact Us section.", "Dukan Manager ko apne shop records manage karne ke liye use karein. Account credentials ko mehfooz rakhna aur enter ki gayi business information ki accuracy check karna user ki zimmedari hai.": "Use Dukan Manager to manage your shop records. You are responsible for keeping account credentials secure and checking the accuracy of business information entered.", "App ke features, availability ya plans mein tabdeeli ho sakti hai. Important business records ka regular backup rakhein.": "App features, availability or plans may change. Keep regular backups of important business records.", "Dukan Manager ek shop-management app hai jo products, stock, sales, customers aur shop records manage karne mein madad deta hai.": "Dukan Manager is a shop-management app that helps manage products, stock, sales, customers and shop records.", "Smart Management for Your Shop.": "Smart Management for Your Shop.", "Products: Maal tab mein product add ya edit karein.": "Products: Add or edit products in the Products tab.", "Sales: Bikri tab mein customer aur items select karke bill save karein.": "Sales: Select a customer and items in the Sales tab, then save the bill.", "Stock: Maal tab mein stock dekhein. Stock correction permission role ke mutabiq hoti hai.": "Stock: View stock in the Products tab. Stock correction access depends on your role.", "Customer: Customer tab se customer aur payment records manage karein.": "Customers: Manage customer and payment records in the Customers tab.", "Backup: Owner account ke Aur → Backup section se backup options dekhein.": "Backup: In the Owner account, open More → Backup to see backup options.", "Feature access aap ke role aur package par depend karta hai.": "Feature access depends on your role and package.", "Problem report karne ke liye email ya WhatsApp par app version (1.0), shop ka naam, issue ka waqt aur error ka screenshot bhejein.": "To report a problem, send the app version (1.0), shop name, approximate time of the issue and an error screenshot by email or WhatsApp.", "Apna password, OTP, private key ya access token kabhi share na karein.": "Never share your password, OTP, private key or access token.", "Developer:": "Developer:", "Support hours:": "Support hours:", "Support timezone: CHECK THIS.": "Support timezone: CHECK THIS."});
+Object.assign(AE40_I18N.ur,{"Dukan Manager shop management ke liye account aur business records ko process karta hai. App mein products, stock, sales, customers, suppliers aur expenses jaisi information ho sakti hai.": "دکان مینیجر دکان کے انتظام کے لیے اکاؤنٹ اور کاروباری ریکارڈ استعمال کرتا ہے۔ ایپ میں مصنوعات، اسٹاک، فروخت، کسٹمرز، سپلائرز اور اخراجات کی معلومات ہو سکتی ہیں۔", "Information ka istemal app ke shop-management features chalane aur support dene ke liye ho sakta hai.": "یہ معلومات ایپ کے دکان مینجمنٹ فیچرز چلانے اور معاونت فراہم کرنے کے لیے استعمال ہو سکتی ہیں۔", "Questions ke liye Contact Us section dekhein.": "سوالات کے لیے رابطہ کریں والے حصے کو دیکھیں۔", "Dukan Manager ko apne shop records manage karne ke liye use karein. Account credentials ko mehfooz rakhna aur enter ki gayi business information ki accuracy check karna user ki zimmedari hai.": "دکان مینیجر کو اپنے دکان کے ریکارڈ سنبھالنے کے لیے استعمال کریں۔ اکاؤنٹ کی معلومات محفوظ رکھنا اور درج کردہ کاروباری معلومات کی درستگی جانچنا صارف کی ذمہ داری ہے۔", "App ke features, availability ya plans mein tabdeeli ho sakti hai. Important business records ka regular backup rakhein.": "ایپ کے فیچرز، دستیابی یا پیکجز تبدیل ہو سکتے ہیں۔ اہم کاروباری ریکارڈ کا باقاعدگی سے بیک اپ رکھیں۔", "Dukan Manager ek shop-management app hai jo products, stock, sales, customers aur shop records manage karne mein madad deta hai.": "دکان مینیجر ایک دکان مینجمنٹ ایپ ہے جو مصنوعات، اسٹاک، فروخت، کسٹمرز اور دکان کے ریکارڈ سنبھالنے میں مدد دیتی ہے۔", "Products: Maal tab mein product add ya edit karein.": "مصنوعات: سامان والے ٹیب میں پروڈکٹ شامل یا تبدیل کریں۔", "Sales: Bikri tab mein customer aur items select karke bill save karein.": "فروخت: فروخت والے ٹیب میں کسٹمر اور اشیا منتخب کر کے بل محفوظ کریں۔", "Stock: Maal tab mein stock dekhein. Stock correction permission role ke mutabiq hoti hai.": "اسٹاک: سامان والے ٹیب میں اسٹاک دیکھیں۔ اسٹاک کی درستگی کی اجازت آپ کے کردار کے مطابق ہے۔", "Customer: Customer tab se customer aur payment records manage karein.": "کسٹمرز: کسٹمر والے ٹیب سے کسٹمر اور ادائیگیوں کا ریکارڈ سنبھالیں۔", "Backup: Owner account ke Aur → Backup section se backup options dekhein.": "بیک اپ: مالک کے اکاؤنٹ میں مزید → بیک اپ کھول کر بیک اپ کے اختیارات دیکھیں۔", "Problem report karne ke liye email ya WhatsApp par app version (1.0), shop ka naam, issue ka waqt aur error ka screenshot bhejein.": "مسئلے کی اطلاع دینے کے لیے ایپ ورژن (1.0)، دکان کا نام، مسئلے کا وقت اور خرابی کا اسکرین شاٹ ای میل یا واٹس ایپ پر بھیجیں۔", "Apna password, OTP, private key ya access token kabhi share na karein.": "اپنا پاس ورڈ، OTP، پرائیویٹ کی یا ایکسیس ٹوکن کبھی شیئر نہ کریں۔", "Support timezone: CHECK THIS.": "معاونت کا ٹائم زون: CHECK THIS۔"});
+function ae40TranslateText(input){
+ let lang=getLang(); if(lang==='roman')return input;
+ const dict=AE40_I18N[lang]||{};
+ let out=input;
+ Object.keys(dict).sort((a,b)=>b.length-a.length).forEach(k=>{out=out.split(k).join(dict[k])});
+ return out;
+}
+function applyTranslations(root){
+ if(!root||getLang()==='roman')return;
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;
+ while(n=walker.nextNode()){if(n.nodeValue.trim())n.nodeValue=ae40TranslateText(n.nodeValue)}
+ root.querySelectorAll('input[placeholder],textarea[placeholder],button[title],button[aria-label]').forEach(el=>{['placeholder','title','aria-label'].forEach(a=>{if(el.hasAttribute(a))el.setAttribute(a,ae40TranslateText(el.getAttribute(a)))})});
+}
+
+function getLang(){try{return localStorage.getItem('ae40_lang')||'roman'}catch(e){return 'roman'}}
+function getLangLabel(){return ({en:'English',ur:'اردو',roman:'Roman Urdu'})[getLang()]||'Roman Urdu'}
+function showInfo(kind){
+ const content={
+  privacy:['Privacy Policy','<p>Dukan Manager shop management ke liye account aur business records ko process karta hai. App mein products, stock, sales, customers, suppliers aur expenses jaisi information ho sakti hai.</p><p>Information ka istemal app ke shop-management features chalane aur support dene ke liye ho sakta hai.</p><div class="muted-warning"><b>CHECK THIS:</b> Exact data collection, storage, sharing, retention, deletion aur third-party services ki details publish karne se pehle Supabase, Google backup aur app configuration ke mutabiq verify karna zaroori hai. Is draft ko final legal policy na samjhein.</div><p>Questions ke liye Contact Us section dekhein.</p>'],
+  terms:['Terms & Conditions','<p>Dukan Manager ko apne shop records manage karne ke liye use karein. Account credentials ko mehfooz rakhna aur enter ki gayi business information ki accuracy check karna user ki zimmedari hai.</p><p>App ke features, availability ya plans mein tabdeeli ho sakti hai. Important business records ka regular backup rakhein.</p><div class="muted-warning"><b>CHECK THIS:</b> Final terms, service availability, liability, cancellation, data ownership aur applicable law ko publish karne se pehle review karna hoga.</div>'],
+  contact:['Contact Us','<p><b>Developer:</b> Ahmad Edits (AE40)</p><p><b>Email:</b> <a href="mailto:'+AE40_CONTACT.email+'">'+AE40_CONTACT.email+'</a></p><p><b>WhatsApp:</b> <a href="https://wa.me/92'+AE40_CONTACT.whatsapp.slice(1)+'" target="_blank" rel="noopener">+92 '+AE40_CONTACT.whatsapp.slice(1)+'</a></p><p><b>Support hours:</b> '+AE40_CONTACT.hours+'</p><p class="mut">Support timezone: CHECK THIS.</p>'],
+  about:['About Us','<p><b>Dukan Manager</b> ek shop-management app hai jo products, stock, sales, customers aur shop records manage karne mein madad deta hai.</p><p><b>Developed by:</b> Ahmad Edits (AE40)</p><p>Smart Management for Your Shop.</p>'],
+  help:['Help & Support','<ul><li>Products: Maal tab mein product add ya edit karein.</li><li>Sales: Bikri tab mein customer aur items select karke bill save karein.</li><li>Stock: Maal tab mein stock dekhein. Stock correction permission role ke mutabiq hoti hai.</li><li>Customer: Customer tab se customer aur payment records manage karein.</li><li>Backup: Owner account ke Aur → Backup section se backup options dekhein.</li></ul><p class="mut">Feature access aap ke role aur package par depend karta hai.</p>'],
+  report:['Report a Problem','<p>Problem report karne ke liye email ya WhatsApp par app version (1.0), shop ka naam, issue ka waqt aur error ka screenshot bhejein.</p><p><b>Contact:</b> '+AE40_CONTACT.email+' | WhatsApp '+AE40_CONTACT.whatsapp+'</p><div class="muted-warning">Apna password, OTP, private key ya access token kabhi share na karein.</div>'],
+  language:['Language','<p>Apni preferred language select karein:</p><label>Language</label><select id="aeLang"><option value="en">English</option><option value="ur">اردو</option><option value="roman">Roman Urdu</option></select><p class="mut">Language preference is device par save hogi aur app ke supported interface labels par apply hogi.</p><button class="b w" onclick="saveAeLang()">Save Language Preference</button>']
+ };
+ const x=content[kind];if(!x)return;
+ $('m').innerHTML='<div class="mc ae-info"><div class="row"><h3>'+x[0]+'</h3><button class="b o s" onclick="closeInfo()">Close</button></div>'+x[1]+'</div>';$('m').className='on';applyTranslations($('m'));
+ if(kind==='language')$('aeLang').value=getLang();
+}
+function closeInfo(){$('m').className=''}
+function saveAeLang(){const v=$('aeLang').value;try{localStorage.setItem('ae40_lang',v)}catch(e){}$('m').className='';toast(getLang()==='en'?'Language saved.':getLang()==='ur'?'زبان محفوظ ہو گئی۔':'Language preference save ho gayi.');draw()}
+function startApp(){
+ let seen=false;try{seen=localStorage.getItem('ae40_intro_seen')==='1'}catch(e){}
+ if(seen){init();return}
+ $('app').innerHTML='<div class="ae-intro"><div class="ae-intro-mark">AE40</div><div class="ae-intro-name">DUKAN MANAGER</div><div class="ae-intro-line">Smart Management for Your Shop</div><button class="b o" onclick="finishIntro()">Skip</button></div>';
+ window.setTimeout(finishIntro,2200);
+}
+function finishIntro(){if(startApp.done)return;startApp.done=true;try{localStorage.setItem('ae40_intro_seen','1')}catch(e){}init()}
+
+if(sb)startApp();
+</script></body></html>
